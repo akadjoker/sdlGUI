@@ -26,6 +26,7 @@ class Font
         int GetWidth(const char *string);
         int GetHeight() const { return m_height; }
         int GetLength() const { return m_length; }
+        int MaxWidth() const { return m_maxWidth; }
  
 
     private:
@@ -44,6 +45,6 @@ class Font
         std::vector<Uint16> m_sizes;
         Uint16 m_height;
         Uint16 m_length;
+        Uint16 m_maxWidth;
         Texture *m_texture;
-
 };

@@ -18,7 +18,37 @@ class ProgressBar;
 class TextBox;
 class DropDown;
 class Tooltip;
+class Layout;
+class VBox;
+class HBox;
 
+enum WidgetType
+{
+    WIDGET_BASE,
+    WIDGET_WINDOW,
+    WIDGET_BUTTON,
+    WIDGET_LABEL,
+    WIDGET_SLIDER,
+    WIDGET_CHECKBOX,
+    WIDGET_RADIOBUTTON,
+    WIDGET_RADIOGROUP,
+    WIDGET_LISTBOX,
+    WIDGET_PROGRESSBAR,
+    WIDGET_TEXTBOX,
+    WIDGET_DROPDOWN,
+    WIDGET_TOOLTIP,
+    WIDGET_LAYOUT,
+    WIDGET_VBOX,
+    WIDGET_HBOX
+};
+
+enum LayoutAlignment
+{
+    ALIGN_START,      
+    ALIGN_CENTER,    
+    ALIGN_END,        
+    ALIGN_STRETCH     
+};
 
 enum GUI_COLOR
 {
@@ -133,8 +163,8 @@ class GUI
     private:
         Skin* m_skin;
         std::vector<Widget*> m_widgets;
-            float m_height;
-    float m_width;
+        float m_height;
+         float m_width;
 
 };
 
@@ -165,6 +195,8 @@ public:
 
     float GetX()  { return m_position.x; }
     float GetY()  { return m_position.y; }
+    float GetWidth() { return m_size.x; }
+    float GetHeight() { return m_size.y; }
 
     float GetRealX() ;
     float GetRealY() ;
@@ -203,22 +235,87 @@ protected:
     Vector2 m_position;
     Vector2 m_size;
     Rectangle m_bounds;
+    WidgetType m_type;
 
     bool iskeyMappped;
     Uint32 m_key;
+    std::vector<Widget*> m_children;
+
+    friend class GUI;
+    friend class Slider;
+    friend class Button;
+    friend class CheckBox;
+    friend class RadioButton;
+    friend class RadioGroup;
+    friend class ListBox;
+    friend class TextBox;
+    friend class Layout;
+    friend class VBox;
+    friend class HBox;
+    friend class ProgressBar;
+    friend class DropDown;
+    friend class Tooltip;
    
 private:
-    std::vector<Widget*> m_children;
     
 
+};
+
+
+
+class Layout : public Widget
+{
+public:
+    Layout();
+    
+    void SetSpacing(float spacing) { m_spacing = spacing; }
+    void SetPadding(float padding) { m_padding = padding; }
+    void SetAlignment(LayoutAlignment align) { m_alignment = align; }
+    
+    virtual void UpdateLayout() = 0;
+
+protected:
+    void OnDraw(RenderBatch* batch) override;
+    void OnUpdate(float delta) override;
+    
+    float m_spacing;
+    float m_padding;
+    LayoutAlignment m_alignment;
+    friend class Window;
+};
+
+class VBox : public Layout
+{
+friend class Window;
+
+public:
+    VBox(float x, float y, float width, float height);
+    void UpdateLayout() override;
+
+};
+
+class HBox : public Layout
+{
+    friend class Window;
+public:
+    HBox(float x, float y, float width, float height);
+    void UpdateLayout() override;
 };
 
 class Window : public Widget
 {
 public:
     Window(const std::string& title, float x, float y, float width, float height);
+    ~Window();
     void SetTitle(const std::string& title) { m_title = title; }
     const std::string& GetTitle() const { return m_title; }
+
+     void SetResizable(bool resizable) { m_resizable = resizable; }
+    bool IsResizable() const { return m_resizable; }
+    
+    void SetMinSize(float width, float height) { m_minSize = Vector2(width, height); }
+    void SetMaxSize(float width, float height) { m_maxSize = Vector2(width, height); }
+
 
     Slider *CreateSlider(bool vertical, float x, float y, float width, float height, float min, float max, float value);
     Label  *CreateLabel(const std::string& text, float x, float y);
@@ -228,9 +325,11 @@ public:
     RadioGroup *CreateRadioGroup(float x, float y, float width, float height, bool vertical = false);
     ListBox *CreateListBox(float x, float y, float width, float height);
     TextBox* CreateTextBox(float x, float y, float width, float height);
-    // ProgressBar* CreateProgressBar(float x, float y, float width, float height);
-    // DropDown* CreateDropDown(float x, float y, float width, float height);
-    // Tooltip* CreateTooltip(const std::string& text);
+    VBox *CreateVBox(float x, float y, float width, float height);
+    HBox *CreateHBox(float x, float y, float width, float height);
+    ProgressBar* CreateProgressBar(float x, float y, float width, float height);
+    DropDown* CreateDropDown(float x, float y, float width, float height);
+ Tooltip* CreateTooltip(const std::string& text);
 
 protected:
     void OnDraw(RenderBatch* batch) override;
@@ -241,11 +340,37 @@ protected:
     void OnMouseUp(int x, int y, int button) override;
 
 private:
+    friend class Widget;
+    friend class GUI;
+    friend class Slider;
+    friend class Button;
+    friend class CheckBox;
+    friend class RadioButton;
+    friend class RadioGroup;
+    friend class ListBox;
+    friend class TextBox;
+    friend class Layout;
+    friend class VBox;
+    friend class HBox;
+    friend class ProgressBar;
+    friend class DropDown;
+    friend class Tooltip;
+
     std::string m_title;
     bool    m_dragging;
     Vector2 m_dragOffset;
     Rectangle m_bounds_bar;
     Rectangle m_bounds_hide;
+
+    bool m_resizable;
+    bool m_resizing;
+    Vector2 m_minSize;
+    Vector2 m_maxSize;
+    Rectangle m_resizeHandles[8];  
+    int m_activeHandle;
+    
+    void UpdateResizeHandles();
+    bool IsOverResizeHandle(int x, int y, int& handleIndex);
 
 };
 
@@ -532,7 +657,9 @@ protected:
   friend class Window;
     void OnDraw(RenderBatch* batch) override;
     void OnUpdate(float delta) override;
+    void OnMouseMove(int x, int y) override;
     void OnMouseDown(int x, int y, int button) override;
+    void OnMouseUp(int x, int y, int button) override;
     void OnKeyDown(Uint32 key) override;
     void OnKeyUp(Uint32 key) override;
 
@@ -546,66 +673,66 @@ private:
 };
 
 
-// class ProgressBar : public Widget
-// {
-// public:
-//     ProgressBar(float x, float y, float width, float height);
-//     void SetProgress(float progress) { m_progress = Clamp(progress, 0.0f, 1.0f); }
-//     float GetProgress() const { return m_progress; }
-//     void SetShowText(bool show) { m_showText = show; }
+class ProgressBar : public Widget
+{
+public:
+    ProgressBar(float x, float y, float width, float height);
+    void SetProgress(float progress) { m_progress = Clamp(progress, 0.0f, 1.0f); }
+    float GetProgress() const { return m_progress; }
+    void SetShowText(bool show) { m_showText = show; }
 
-// protected:
-//   friend class Window;
-//     void OnDraw(RenderBatch* batch) override;
+protected:
+  friend class Window;
+    void OnDraw(RenderBatch* batch) override;
 
-// private:
-//     float m_progress;
-//     bool m_showText;
-// };
+private:
+    float m_progress;
+    bool m_showText;
+};
 
 
-// class DropDown : public Widget
-// {
-// public:
-//     DropDown(float x, float y, float width, float height);
-//     void AddItem(const std::string& item);
-//     void RemoveItem(const std::string& item);
-//     void SetSelectedIndex(int index);
-//     int GetSelectedIndex() const { return m_selectedIndex; }
-//     const std::string& GetSelectedItem() const;
+class DropDown : public Widget
+{
+public:
+    DropDown(float x, float y, float width, float height);
+    void AddItem(const std::string& item);
+    void RemoveItem(const std::string& item);
+    void SetSelectedIndex(int index);
+    int GetSelectedIndex() const { return m_selectedIndex; }
+    const std::string& GetSelectedItem() const;
     
-//     std::function<void(int)> OnSelectionChanged;
+    std::function<void(int)> OnSelectionChanged;
 
-// protected:
-//   friend class Window;
-//     void OnDraw(RenderBatch* batch) override;
-//     void OnUpdate(float delta) override;
-//     void OnMouseDown(int x, int y, int button) override;
-//     void OnMouseUp(int x, int y, int button) override;
+protected:
+  friend class Window;
+    void OnDraw(RenderBatch* batch) override;
+    void OnUpdate(float delta) override;
+    void OnMouseDown(int x, int y, int button) override;
+    void OnMouseUp(int x, int y, int button) override;
 
-// private:
-//     std::vector<std::string> m_items;
-//     int m_selectedIndex;
-//     bool m_isOpen;
-//     Rectangle m_dropDownBounds;
-//     int m_hoverIndex;
-// };
+private:
+    std::vector<std::string> m_items;
+    int m_selectedIndex;
+    bool m_isOpen;
+    Rectangle m_dropDownBounds;
+    int m_hoverIndex;
+};
 
 
-// class Tooltip : public Widget
-// {
-// public:
-//     Tooltip(const std::string& text);
-//     void SetText(const std::string& text) { m_text = text; }
-//     void SetDelay(float seconds) { m_showDelay = seconds; }
+class Tooltip : public Widget
+{
+public:
+    Tooltip(const std::string& text);
+    void SetText(const std::string& text) { m_text = text; }
+    void SetDelay(float seconds) { m_showDelay = seconds; }
     
-// protected:
-//     void OnDraw(RenderBatch* batch) override;
-//     void OnUpdate(float delta) override;
-
-// private:
-//     std::string m_text;
-//     float m_showDelay;
-//     float m_currentDelay;
-//     bool m_visible;
-// };
+protected:
+    void OnDraw(RenderBatch* batch) override;
+    void OnUpdate(float delta) override;
+  friend class Window;
+private:
+    std::string m_text;
+    float m_showDelay;
+    float m_currentDelay;
+    bool m_visible;
+};

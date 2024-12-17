@@ -178,33 +178,87 @@ int main()
 
 
   {
-    ///Window* window = widgets.CreateWindow("Test Window", 100, 100, 400, 300);
+    Window* window = widgets.CreateWindow("Test Window", 100, 100, 350, 320);
+    window->SetResizable(true);
+     window->SetMinSize(350, 320); 
+  //   window->SetMaxSize(800, 600);
 
-    // Criar um TextBox
-    // TextBox* textbox = window->CreateTextBox(20, 20, 200, 25);
-    // textbox->SetText("Digite aqui...");
-    // textbox->OnTextChanged = [](const std::string& text) {
-    //     printf("Texto alterado: %s\n", text.c_str());
-    // };
+//     VBox* vbox = window->CreateVBox(10, 10, 400, 280);
+//     vbox->SetAlignment(ALIGN_CENTER);
+//     vbox->SetSpacing(2);
+//     vbox->SetPadding(5);
 
-    // // Criar uma ProgressBar
-    // ProgressBar* progressbar = window->CreateProgressBar(20, 60, 200, 20);
-    // progressbar->SetProgress(0.75f);
-    // progressbar->SetShowText(true);
+  
+//     Button* btn1 = window->CreateButton("Button 1", 0, 0, 100, 30);
+//     Button* btn2 = window->CreateButton("Button 2", 0, 0, 100, 30);
+//     TextBox* txt = window->CreateTextBox(0, 0, 200, 25);
 
-    // // Criar um DropDown
-    // DropDown* dropdown = window->CreateDropDown(20, 100, 200, 25);
-    // dropdown->AddItem("Opção 1");
-    // dropdown->AddItem("Opção 2");
-    // dropdown->AddItem("Opção 3");
-    // dropdown->OnSelectionChanged = [](int index) {
-    //     printf("Seleção alterada: %d\n", index);
-    // };
+//     vbox->Add(btn1);
+//     vbox->Add(btn2);
+//     vbox->Add(txt);
 
-    // // Criar um Tooltip
+// {
+//     HBox* hbox = window->CreateHBox(0, 0, 360, 40);
+//     hbox->SetAlignment(ALIGN_CENTER);
+//     hbox->SetSpacing(5);
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+ 
+
+//      vbox->Add(hbox);
+// }
+// {
+//     VBox* hbox = window->CreateVBox(0, 0, 90, 30*4);
+//     hbox->SetAlignment(ALIGN_STRETCH);
+//     hbox->SetSpacing(5);
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+
+ 
+
+//      vbox->Add(hbox);
+// }
+// {
+//     HBox* hbox = window->CreateHBox(0, 0, 360, 40);
+//     hbox->SetAlignment(ALIGN_CENTER);
+//     hbox->SetSpacing(5);
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+//     hbox->Add(window->CreateButton("Button", 0, 0, 80, 30));
+ 
+
+//      vbox->Add(hbox);
+// }
+
+    TextBox* textbox = window->CreateTextBox(20, 20, 200, 25);
+    textbox->SetText("Texto");
+    textbox->OnTextChanged = [](const std::string& text) 
+    {
+         Log(0, " Text: %s\n", text.c_str());
+    };
+
+    ProgressBar* progressbar = window->CreateProgressBar(20, 60, 200, 20);
+    progressbar->SetProgress(0.75f);
+    progressbar->SetShowText(true);
+
+
+    DropDown* dropdown = window->CreateDropDown(20, 100, 200, 25);
+    dropdown->AddItem("Option 1");
+    dropdown->AddItem("Option 2");
+    dropdown->AddItem("Opotin 3");
+    dropdown->OnSelectionChanged = [&](int index) 
+    {
+        Log(0,"Value: %d \n", index);
+    };
+
+
     // Button* button = window->CreateButton("Hover me", 20, 140, 100, 25);
-    // Tooltip* tooltip = window->CreateTooltip("Este é um botão de exemplo");
-    // tooltip->SetDelay(0.5f); // Mostra tooltip após 0.5 segundos
+    Tooltip* tooltip = window->CreateTooltip("Ola  exemplo");
+     tooltip->SetDelay(0.5f); // Mostra tooltip após 0.5 segundos
 }
 
     

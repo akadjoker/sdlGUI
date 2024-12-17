@@ -5,6 +5,7 @@
 
 Font::Font()
 {
+    m_maxWidth = 1;
     m_texture = new Texture();
     m_texture->Load("resources/font.tga");
     Load("resources/font.fnt");
@@ -63,6 +64,10 @@ bool Font::Load(const std::string& filePath)
                     return false;
                 }
 
+                if (data.width > m_maxWidth) 
+                {
+                    m_maxWidth = data.height;
+                }
 
 
                 if (data.height > m_height) 
