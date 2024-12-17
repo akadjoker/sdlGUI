@@ -7,6 +7,23 @@ inline float toRadians(float degrees)
     return degrees * (PI / 180.0f);
 }
 
+inline float Clamp(float a, float min, float max)
+{
+	if (a < min)
+		a = min;
+	else if (a > max)
+		a = max;
+	return a;
+}
+inline int Clamp(int a, int min, int max)
+{
+	if (a < min)
+		a = min;
+	else if (a > max)
+		a = max;
+	return a;
+}
+
 
 struct Color 
 {

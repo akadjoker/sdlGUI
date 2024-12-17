@@ -1,0 +1,3 @@
+/home/lrosa-do/projects/sdlGUI/build/CMakeFiles/sdlGUI.dir
+/home/lrosa-do/projects/sdlGUI/build/CMakeFiles/edit_cache.dir
+/home/lrosa-do/projects/sdlGUI/build/CMakeFiles/rebuild_cache.dir

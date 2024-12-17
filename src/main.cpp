@@ -8,6 +8,12 @@
 #include "pch.h"
 
 
+extern "C" const char* __lsan_default_suppressions() {
+    return "leak:libSDL2\n"
+           "leak:SDL_DBus\n";
+}
+
+
  int SCREEN_WIDTH = 1024;
  int SCREEN_HEIGHT = 720;
 
@@ -169,6 +175,37 @@ int main()
         labelSelect->SetText("select "+listBox->GetItem(index));
     };
 
+
+
+  {
+    ///Window* window = widgets.CreateWindow("Test Window", 100, 100, 400, 300);
+
+    // Criar um TextBox
+    // TextBox* textbox = window->CreateTextBox(20, 20, 200, 25);
+    // textbox->SetText("Digite aqui...");
+    // textbox->OnTextChanged = [](const std::string& text) {
+    //     printf("Texto alterado: %s\n", text.c_str());
+    // };
+
+    // // Criar uma ProgressBar
+    // ProgressBar* progressbar = window->CreateProgressBar(20, 60, 200, 20);
+    // progressbar->SetProgress(0.75f);
+    // progressbar->SetShowText(true);
+
+    // // Criar um DropDown
+    // DropDown* dropdown = window->CreateDropDown(20, 100, 200, 25);
+    // dropdown->AddItem("Opção 1");
+    // dropdown->AddItem("Opção 2");
+    // dropdown->AddItem("Opção 3");
+    // dropdown->OnSelectionChanged = [](int index) {
+    //     printf("Seleção alterada: %d\n", index);
+    // };
+
+    // // Criar um Tooltip
+    // Button* button = window->CreateButton("Hover me", 20, 140, 100, 25);
+    // Tooltip* tooltip = window->CreateTooltip("Este é um botão de exemplo");
+    // tooltip->SetDelay(0.5f); // Mostra tooltip após 0.5 segundos
+}
 
     
 

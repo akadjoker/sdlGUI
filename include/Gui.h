@@ -14,6 +14,10 @@ class CheckBox;
 class RadioButton;
 class RadioGroup;
 class ListBox;
+class ProgressBar;
+class TextBox;
+class DropDown;
+class Tooltip;
 
 
 enum GUI_COLOR
@@ -55,6 +59,28 @@ enum GUI_COLOR
     WINDOW_TOP_BAR,		
     WINDOW_TITLE,
     WINDOW,			
+
+
+    TEXTBOX_TEXT,
+    TEXTBOX_BACKGROUND,
+    TEXTBOX_BORDER,
+    TEXTBOX_SELECTION,
+    TEXTBOX_CURSOR,
+    
+    PROGRESSBAR_BACKGROUND,
+    PROGRESSBAR_FILL,
+    PROGRESSBAR_BORDER,
+    
+    DROPDOWN_TEXT,
+    DROPDOWN_BACKGROUND,
+    DROPDOWN_BORDER,
+    DROPDOWN_ARROW,
+    DROPDOWN_ITEM_HOVER,
+    
+    TOOLTIP_TEXT,
+    TOOLTIP_BACKGROUND,
+    TOOLTIP_BORDER,
+
     COLORS_COUNT
 };
 
@@ -201,6 +227,10 @@ public:
     RadioButton *CreateRadioButton(const std::string& text, bool state, float x, float y, float width, float height);
     RadioGroup *CreateRadioGroup(float x, float y, float width, float height, bool vertical = false);
     ListBox *CreateListBox(float x, float y, float width, float height);
+    TextBox* CreateTextBox(float x, float y, float width, float height);
+    // ProgressBar* CreateProgressBar(float x, float y, float width, float height);
+    // DropDown* CreateDropDown(float x, float y, float width, float height);
+    // Tooltip* CreateTooltip(const std::string& text);
 
 protected:
     void OnDraw(RenderBatch* batch) override;
@@ -483,3 +513,99 @@ private:
 
  
 };
+
+
+
+class TextBox : public Widget
+{
+public:
+    TextBox(float x, float y, float width, float height);
+    void SetText(const std::string& text) { m_text = text; }
+    const std::string& GetText() const { return m_text; }
+    void SetMaxLength(size_t length) { m_maxLength = length; }
+    void SetPasswordMode(bool enabled) { m_passwordMode = enabled; }
+    
+    std::function<void(const std::string&)> OnTextChanged;
+    std::function<void()> OnEnter;
+
+protected:
+  friend class Window;
+    void OnDraw(RenderBatch* batch) override;
+    void OnUpdate(float delta) override;
+    void OnMouseDown(int x, int y, int button) override;
+    void OnKeyDown(Uint32 key) override;
+    void OnKeyUp(Uint32 key) override;
+
+private:
+    std::string m_text;
+    size_t m_maxLength;
+    bool m_passwordMode;
+    bool m_selected;
+    float m_cursorTimer;
+    int m_cursorPos;
+};
+
+
+// class ProgressBar : public Widget
+// {
+// public:
+//     ProgressBar(float x, float y, float width, float height);
+//     void SetProgress(float progress) { m_progress = Clamp(progress, 0.0f, 1.0f); }
+//     float GetProgress() const { return m_progress; }
+//     void SetShowText(bool show) { m_showText = show; }
+
+// protected:
+//   friend class Window;
+//     void OnDraw(RenderBatch* batch) override;
+
+// private:
+//     float m_progress;
+//     bool m_showText;
+// };
+
+
+// class DropDown : public Widget
+// {
+// public:
+//     DropDown(float x, float y, float width, float height);
+//     void AddItem(const std::string& item);
+//     void RemoveItem(const std::string& item);
+//     void SetSelectedIndex(int index);
+//     int GetSelectedIndex() const { return m_selectedIndex; }
+//     const std::string& GetSelectedItem() const;
+    
+//     std::function<void(int)> OnSelectionChanged;
+
+// protected:
+//   friend class Window;
+//     void OnDraw(RenderBatch* batch) override;
+//     void OnUpdate(float delta) override;
+//     void OnMouseDown(int x, int y, int button) override;
+//     void OnMouseUp(int x, int y, int button) override;
+
+// private:
+//     std::vector<std::string> m_items;
+//     int m_selectedIndex;
+//     bool m_isOpen;
+//     Rectangle m_dropDownBounds;
+//     int m_hoverIndex;
+// };
+
+
+// class Tooltip : public Widget
+// {
+// public:
+//     Tooltip(const std::string& text);
+//     void SetText(const std::string& text) { m_text = text; }
+//     void SetDelay(float seconds) { m_showDelay = seconds; }
+    
+// protected:
+//     void OnDraw(RenderBatch* batch) override;
+//     void OnUpdate(float delta) override;
+
+// private:
+//     std::string m_text;
+//     float m_showDelay;
+//     float m_currentDelay;
+//     bool m_visible;
+// };

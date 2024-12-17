@@ -56,6 +56,26 @@ Skin::Skin()
     m_colors[LISTBOX_ITEM_OVER] = Color(0.4f, 0.4f, 0.4f, 1.0f);
 
 
+    m_colors[TEXTBOX_TEXT] = Color(0.0f, 0.0f, 0.0f, 1.0f);
+    m_colors[TEXTBOX_BACKGROUND] = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    m_colors[TEXTBOX_BORDER] = Color(0.4f, 0.4f, 0.4f, 1.0f);
+    m_colors[TEXTBOX_SELECTION] = Color(0.2f, 0.4f, 0.9f, 0.5f);
+    m_colors[TEXTBOX_CURSOR] = Color(0.0f, 0.0f, 0.0f, 1.0f);
+
+    m_colors[PROGRESSBAR_BACKGROUND] = Color(0.8f, 0.8f, 0.8f, 1.0f);
+    m_colors[PROGRESSBAR_FILL] = Color(0.2f, 0.7f, 0.2f, 1.0f);
+    m_colors[PROGRESSBAR_BORDER] = Color(0.4f, 0.4f, 0.4f, 1.0f);
+
+    m_colors[DROPDOWN_TEXT] = Color(0.0f, 0.0f, 0.0f, 1.0f);
+    m_colors[DROPDOWN_BACKGROUND] = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    m_colors[DROPDOWN_BORDER] = Color(0.4f, 0.4f, 0.4f, 1.0f);
+    m_colors[DROPDOWN_ARROW] = Color(0.2f, 0.2f, 0.2f, 1.0f);
+    m_colors[DROPDOWN_ITEM_HOVER] = Color(0.8f, 0.9f, 1.0f, 1.0f);
+
+    m_colors[TOOLTIP_TEXT] = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    m_colors[TOOLTIP_BACKGROUND] = Color(0.1f, 0.1f, 0.1f, 0.9f);
+    m_colors[TOOLTIP_BORDER] = Color(0.3f, 0.3f, 0.3f, 1.0f);
+
 
     m_font = new Font();
 }
@@ -552,6 +572,40 @@ ListBox *Window::CreateListBox(float x, float y, float width, float height)
     return listbox;
 }
 
+
+// TextBox* Window::CreateTextBox(float x, float y, float width, float height)
+// {
+//     TextBox* textbox = new TextBox(x, y, width, height);
+//     textbox->m_gui = this->m_gui;
+//     Add(textbox);
+//     return textbox;
+// }
+
+// ProgressBar* Window::CreateProgressBar(float x, float y, float width, float height)
+// {
+//     ProgressBar* progressbar = new ProgressBar(x, y, width, height);
+//     progressbar->m_gui = this->m_gui;
+//     Add(progressbar);
+//     return progressbar;
+// }
+
+// DropDown* Window::CreateDropDown(float x, float y, float width, float height)
+// {
+//     DropDown* dropdown = new DropDown(x, y, width, height);
+//     dropdown->m_gui = this->m_gui;
+//     Add(dropdown);
+//     return dropdown;
+// }
+
+// Tooltip* Window::CreateTooltip(const std::string& text)
+// {
+//     Tooltip* tooltip = new Tooltip(text);
+//     tooltip->m_gui = this->m_gui;
+//     Add(tooltip);
+//     return tooltip;
+// }
+
+
 Slider::Slider(bool vertical, float x, float y, float width, float height, float min, float max, float value): Widget()
 {
     m_vertical = vertical;
@@ -987,7 +1041,7 @@ void ListBox::OnDraw(RenderBatch *batch)
     int x = GetRealX() + 2;
     m_scroll_size = h;
 
-    float max_height  =   (m_size.y / h) ;
+    //float max_height  =   (m_size.y / h) ;
 
 
 
@@ -1486,7 +1540,7 @@ void RadioGroup::OnMouseDown(int x, int y, int button)
         {
             for (unsigned int i = 0; i < m_radios.size(); i++)
             {
-                if (i!=lastSelect)
+                if ( i != (unsigned int)lastSelect)
                 {
                     m_radios[i]->checked = false;
                 }
@@ -1515,3 +1569,423 @@ void RadioGroup::OnKeyUp(Uint32 key)
 }
 
 
+// TextBox Implementation
+TextBox::TextBox(float x, float y, float width, float height) : Widget()
+{
+    m_position.x = x;
+    m_position.y = y;
+    m_size.x = width;
+    m_size.y = height;
+    m_maxLength = 256;
+    m_passwordMode = false;
+    m_selected = false;
+    m_cursorTimer = 0;
+    m_cursorPos = 0;
+}
+
+void TextBox::OnDraw(RenderBatch* batch)
+{
+    Skin* skin = m_gui->GetSkin();
+    Font* font = skin->GetFont();
+
+    // Background
+    batch->DrawRectangle((int)GetRealX(), (int)GetRealY(), 
+                        (int)m_size.x, (int)m_size.y,
+                        skin->GetColor(TEXTBOX_BACKGROUND), true);
+
+    // Border
+    Color borderColor = m_selected ? 
+                       skin->GetColor(TEXTBOX_BORDER) : 
+                       Color(0.5f, 0.5f, 0.5f, 1.0f);
+    batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+                        (int)m_size.x, (int)m_size.y,
+                        borderColor, false);
+
+    // Text
+    std::string displayText = m_passwordMode ? 
+                            std::string(m_text.length(), '*') : 
+                            m_text;
+
+    float textY = GetRealY() + (m_size.y - font->GetHeight()) / 2;
+    font->DrawText(batch, displayText.c_str(),
+                  Vector2(GetRealX() + 5, textY),
+                  skin->GetColor(TEXTBOX_TEXT));
+
+    // Cursor
+    if (m_selected && (int)(m_cursorTimer * 2) % 2 == 0)
+    {
+        float cursorX = GetRealX() + 5 + 
+                       font->GetWidth(displayText.substr(0, m_cursorPos).c_str());
+        batch->DrawRectangle((int)cursorX, (int)GetRealY() + 4,
+                           1, (int)m_size.y - 8,
+                           skin->GetColor(TEXTBOX_CURSOR), true);
+    }
+}
+
+void TextBox::OnKeyDown(Uint32 key)
+{
+    if (!m_selected) return;
+
+    std::string oldText = m_text;
+
+    switch(key)
+    {
+        case SDLK_BACKSPACE:
+            if (!m_text.empty() && m_cursorPos > 0)
+            {
+                m_text.erase(m_cursorPos - 1, 1);
+                m_cursorPos--;
+            }
+            break;
+
+        case SDLK_DELETE:
+            if (!m_text.empty() && m_cursorPos < (int)m_text.length())
+            {
+                m_text.erase(m_cursorPos, 1);
+            }
+            break;
+
+        case SDLK_LEFT:
+            if (m_cursorPos > 0) m_cursorPos--;
+            break;
+
+        case SDLK_RIGHT:
+            if (m_cursorPos < (int)m_text.length()) m_cursorPos++;
+            break;
+
+        case SDLK_HOME:
+            m_cursorPos = 0;
+            break;
+
+        case SDLK_END:
+            m_cursorPos = m_text.length();
+            break;
+
+        default:
+            if (key >= 32 && key <= 126) // ASCII printable characters
+            {
+                if (m_text.length() < m_maxLength)
+                {
+                    m_text.insert(m_cursorPos, 1, (char)key);
+                    m_cursorPos++;
+                }
+            }
+            break;
+    }
+
+    if (oldText != m_text && OnTextChanged)
+    {
+        OnTextChanged(m_text);
+    }
+}
+
+// // ProgressBar Implementation
+// ProgressBar::ProgressBar(float x, float y, float width, float height) : Widget()
+// {
+//     m_position.x = x;
+//     m_position.y = y;
+//     m_size.x = width;
+//     m_size.y = height;
+//     m_progress = 0.0f;
+//     m_showText = true;
+// }
+
+// void ProgressBar::OnDraw(RenderBatch* batch)
+// {
+//     Skin* skin = m_gui->GetSkin();
+//     Font* font = skin->GetFont();
+
+//     // Background
+//     batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                         (int)m_size.x, (int)m_size.y,
+//                         skin->GetColor(PROGRESSBAR_BACKGROUND), true);
+
+//     // Progress fill
+//     float fillWidth = m_size.x * m_progress;
+//     if (fillWidth > 0)
+//     {
+//         batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                             (int)fillWidth, (int)m_size.y,
+//                             skin->GetColor(PROGRESSBAR_FILL), true);
+//     }
+
+//     // Border
+//     batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                         (int)m_size.x, (int)m_size.y,
+//                         skin->GetColor(PROGRESSBAR_BORDER), false);
+
+//     // Percentage text
+//     if (m_showText)
+//     {
+//         char text[32];
+//         snprintf(text, sizeof(text), "%.0f%%", m_progress * 100);
+        
+//         float textWidth = font->GetWidth(text);
+//         float textX = GetRealX() + (m_size.x - textWidth) / 2;
+//         float textY = GetRealY() + (m_size.y - font->GetHeight()) / 2;
+        
+//         font->DrawText(batch, text, Vector2(textX, textY), Color::WHITE);
+//     }
+// }
+
+// // DropDown Implementation
+// DropDown::DropDown(float x, float y, float width, float height) : Widget()
+// {
+//     m_position.x = x;
+//     m_position.y = y;
+//     m_size.x = width;
+//     m_size.y = height;
+//     m_selectedIndex = -1;
+//     m_isOpen = false;
+//     m_hoverIndex = -1;
+// }
+
+// void DropDown::OnDraw(RenderBatch* batch)
+// {
+//     Skin* skin = m_gui->GetSkin();
+//     Font* font = skin->GetFont();
+
+//     // Main button
+//     batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                         (int)m_size.x, (int)m_size.y,
+//                         skin->GetColor(DROPDOWN_BACKGROUND), true);
+    
+//     batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                         (int)m_size.x, (int)m_size.y,
+//                         skin->GetColor(DROPDOWN_BORDER), false);
+
+//     // Selected text
+//     if (m_selectedIndex >= 0 && m_selectedIndex < (int)m_items.size())
+//     {
+//         float textY = GetRealY() + (m_size.y - font->GetHeight()) / 2;
+//         font->DrawText(batch, m_items[m_selectedIndex].c_str(),
+//                       Vector2(GetRealX() + 5, textY),
+//                       skin->GetColor(DROPDOWN_TEXT));
+//     }
+
+//     // Arrow
+//     float arrowSize = m_size.y * 0.3f;
+//     float arrowX = GetRealX() + m_size.x - arrowSize - 5;
+//     float arrowY = GetRealY() + (m_size.y - arrowSize) / 2;
+    
+//     Vector2 p1(arrowX, arrowY);
+//     Vector2 p2(arrowX + arrowSize, arrowY);
+//     Vector2 p3(arrowX + arrowSize/2, arrowY + arrowSize);
+    
+//     batch->Mode(TRIANGLES);
+//     batch->Color4f(0.2f, 0.2f, 0.2f, 1.0f);
+//     batch->Vertex2f(p1.x, p1.y);
+//     batch->Vertex2f(p2.x, p2.y);
+//     batch->Vertex2f(p3.x, p3.y);
+
+//     // Dropdown list when open
+//     if (m_isOpen)
+//     {
+//         float itemHeight = font->GetHeight() + 10;
+//         float listHeight = itemHeight * m_items.size();
+        
+//         m_dropDownBounds = Rectangle(GetRealX(), GetRealY() + m_size.y,
+//                                    m_size.x, listHeight);
+
+//         batch->DrawRectangle(m_dropDownBounds.x, m_dropDownBounds.y,
+//                             m_dropDownBounds.width, m_dropDownBounds.height,
+//                             skin->GetColor(DROPDOWN_BACKGROUND), true);
+        
+//         batch->DrawRectangle(m_dropDownBounds.x, m_dropDownBounds.y,
+//                             m_dropDownBounds.width, m_dropDownBounds.height,
+//                             skin->GetColor(DROPDOWN_BORDER), false);
+
+//         float itemY = GetRealY() + m_size.y;
+//         for (size_t i = 0; i < m_items.size(); i++)
+//         {
+//             if (m_hoverIndex == (int)i)
+//             {
+//                 batch->DrawRectangle((int)GetRealX(), (int)itemY,
+//                                    (int)m_size.x, (int)itemHeight,
+//                                    skin->GetColor(DROPDOWN_ITEM_HOVER), true);
+//             }
+
+//             font->DrawText(batch, m_items[i].c_str(),
+//                           Vector2(GetRealX() + 5, itemY + 5),
+//                           skin->GetColor(DROPDOWN_TEXT));
+            
+//             itemY += itemHeight;
+//         }
+//     }
+// }
+
+// void DropDown::OnMouseDown(int x, int y, int button)
+// {
+//     if (button != 1) return;
+
+//     if (m_bounds.Contains(x, y))
+//     {
+//         m_isOpen = !m_isOpen;
+//         return;
+//     }
+
+//     if (m_isOpen && m_dropDownBounds.Contains(x, y))
+//     {
+//         float itemHeight = m_gui->GetSkin()->GetFont()->GetHeight() + 10;
+//         int index = (y - m_dropDownBounds.y) / itemHeight;
+        
+//         if (index >= 0 && index < (int)m_items.size())
+//         {
+//             if (m_selectedIndex != index)
+//             {
+//                 m_selectedIndex = index;
+//                 if (OnSelectionChanged) OnSelectionChanged(m_selectedIndex);
+//             }
+//         }
+//         m_isOpen = false;
+//     }
+//     else
+//     {
+//         m_isOpen = false;
+//     }
+// }
+
+// void DropDown::OnUpdate(float delta)
+// {
+//     m_bounds = Rectangle(GetRealX(), GetRealY(), m_size.x, m_size.y);
+
+//     if (m_isOpen)
+//     {
+//         int mouseX, mouseY;
+//         SDL_GetMouseState(&mouseX, &mouseY);
+        
+//         if (m_dropDownBounds.Contains(mouseX, mouseY))
+//         {
+//             float itemHeight = m_gui->GetSkin()->GetFont()->GetHeight() + 10;
+//             m_hoverIndex = (mouseY - m_dropDownBounds.y) / itemHeight;
+//         }
+//         else
+//         {
+//             m_hoverIndex = -1;
+//         }
+//     }
+// }
+
+// // Tooltip Implementation
+// Tooltip::Tooltip(const std::string& text) : Widget()
+// {
+//     m_text = text;
+//     m_showDelay = 0.5f;
+//     m_currentDelay = 0.0f;
+//     m_visible = false;
+//     m_size.x = 200; // Default width
+//     m_size.y = 30;  // Default height
+// }
+
+// void Tooltip::OnDraw(RenderBatch* batch)
+// {
+//     if (!m_visible) return;
+
+//     Skin* skin = m_gui->GetSkin();
+//     Font* font = skin->GetFont();
+
+//     // Adjust size based on text
+//     float textWidth = font->GetWidth(m_text.c_str());
+//     float textHeight = font->GetHeight();
+//     m_size.x = textWidth + 20;
+//     m_size.y = textHeight + 10;
+
+//     // Get mouse position for positioning
+//     int mouseX, mouseY;
+//     SDL_GetMouseState(&mouseX, &mouseY);
+    
+//     // Position tooltip near mouse
+//     m_position.x = mouseX + 15;
+//     m_position.y = mouseY - m_size.y - 5;
+
+//     // Keep tooltip on screen
+//     if (m_position.x + m_size.x > m_gui->GetWidth())
+//         m_position.x = m_gui->GetWidth() - m_size.x;
+//     if (m_position.y < 0)
+//         m_position.y = mouseY + 15;
+
+//     // Draw background
+//     batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                         (int)m_size.x, (int)m_size.y,
+//                         skin->GetColor(TOOLTIP_BACKGROUND), true);
+    
+//     // Draw border
+//     batch->DrawRectangle((int)GetRealX(), (int)GetRealY(),
+//                         (int)m_size.x, (int)m_size.y,
+//                         skin->GetColor(TOOLTIP_BORDER), false);
+
+//     // Draw text
+//     float textX = GetRealX() + (m_size.x - textWidth) / 2;
+//     float textY = GetRealY() + (m_size.y - textHeight) / 2;
+//     font->DrawText(batch, m_text.c_str(),
+//                   Vector2(textX, textY),
+//                   skin->GetColor(TOOLTIP_TEXT));
+// }
+
+// void Tooltip::OnUpdate(float delta)
+// {
+//     if (m_focus)
+//     {
+//         m_currentDelay += delta;
+//         if (m_currentDelay >= m_showDelay)
+//         {
+//             m_visible = true;
+//         }
+//     }
+//     else
+//     {
+//         m_currentDelay = 0.0f;
+//         m_visible = false;
+//     }
+// }
+
+// // Métodos auxiliares para o DropDown
+// void DropDown::AddItem(const std::string& item)
+// {
+//     m_items.push_back(item);
+//     if (m_selectedIndex == -1)
+//     {
+//         m_selectedIndex = 0;
+//         if (OnSelectionChanged)
+//             OnSelectionChanged(m_selectedIndex);
+//     }
+// }
+
+// void DropDown::RemoveItem(const std::string& item)
+// {
+//     auto it = std::find(m_items.begin(), m_items.end(), item);
+//     if (it != m_items.end())
+//     {
+//         int index = std::distance(m_items.begin(), it);
+//         m_items.erase(it);
+        
+//         if (m_selectedIndex == index)
+//         {
+//             m_selectedIndex = m_items.empty() ? -1 : 0;
+//             if (OnSelectionChanged)
+//                 OnSelectionChanged(m_selectedIndex);
+//         }
+//         else if (m_selectedIndex > index)
+//         {
+//             m_selectedIndex--;
+//         }
+//     }
+// }
+
+// const std::string& DropDown::GetSelectedItem() const
+// {
+//     static std::string empty;
+//     if (m_selectedIndex >= 0 && m_selectedIndex < (int)m_items.size())
+//         return m_items[m_selectedIndex];
+//     return empty;
+// }
+
+// void DropDown::SetSelectedIndex(int index)
+// {
+//     if (index >= -1 && index < (int)m_items.size() && index != m_selectedIndex)
+//     {
+//         m_selectedIndex = index;
+//         if (OnSelectionChanged)
+//             OnSelectionChanged(m_selectedIndex);
+//     }
+// }

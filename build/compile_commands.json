@@ -1,0 +1,44 @@
+[
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/Batch.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/Batch.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/Batch.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/Batch.cpp.o"
+},
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/File.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/File.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/File.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/File.cpp.o"
+},
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/Font.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/Font.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/Font.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/Font.cpp.o"
+},
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/Gui.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/Gui.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/Gui.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/Gui.cpp.o"
+},
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/Texture.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/Texture.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/Texture.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/Texture.cpp.o"
+},
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/Utils.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/Utils.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/Utils.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/Utils.cpp.o"
+},
+{
+  "directory": "/home/lrosa-do/projects/sdlGUI/build",
+  "command": "/usr/bin/g++ -I/include -I/home/lrosa-do/projects/sdlGUI/include -I/home/lrosa-do/projects/sdlGUI/src -g -std=gnu++11 -Wall -fsanitize=address -fsanitize=undefined -fsanitize=leak -fno-omit-frame-pointer -g -D_DEBUG -o CMakeFiles/sdlGUI.dir/src/main.cpp.o -c /home/lrosa-do/projects/sdlGUI/src/main.cpp",
+  "file": "/home/lrosa-do/projects/sdlGUI/src/main.cpp",
+  "output": "CMakeFiles/sdlGUI.dir/src/main.cpp.o"
+}
+]

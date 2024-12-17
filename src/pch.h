@@ -4,13 +4,12 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-#include <map>
 #include <unordered_map>
 #include <functional>
-#include <future>
 #include <algorithm> 
 #include <cctype>  
 #include <sys/stat.h>
+
 #include <SDL2/SDL.h>
 #define GL_GLEXT_PROTOTYPES
 #define GLX_GLEXT_PROTOTYPES 
